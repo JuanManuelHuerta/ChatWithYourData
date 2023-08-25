@@ -1,0 +1,6 @@
+langchain
+pypdf
+openai
+tiktoken
+chromadb
+lark

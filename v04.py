@@ -13,8 +13,6 @@ sys.path.append('../..')
 from dotenv import load_dotenv, find_dotenv
 _ = load_dotenv(find_dotenv()) # read local .env file
 
-#openai.api_key  = os.environ['OPENAI_API_KEY']
-
 
 openai.api_key  = config['KEYS']['OPENAI_API_KEY']
 
@@ -31,7 +29,7 @@ print(llm_name)
 from langchain.vectorstores import Chroma
 from langchain.embeddings.openai import OpenAIEmbeddings
 persist_directory = 'docs/chroma/'
-embedding = OpenAIEmbeddings()
+embedding = OpenAIEmbeddings(openai_api_key=openai.api_key)
 vectordb = Chroma(persist_directory=persist_directory, embedding_function=embedding)
 
 
@@ -49,7 +47,7 @@ len(docs)
 
 
 from langchain.chat_models import ChatOpenAI
-llm = ChatOpenAI(model_name=llm_name, temperature=0)
+llm = ChatOpenAI(model_name=llm_name, temperature=0,openai_api_key=openai.api_key)
 
 
 from langchain.chains import RetrievalQA

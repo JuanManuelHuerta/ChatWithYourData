@@ -1,4 +1,4 @@
-import os
+import yaml
 import openai
 import sys
 sys.path.append('../..')
@@ -6,7 +6,17 @@ sys.path.append('../..')
 from dotenv import load_dotenv, find_dotenv
 _ = load_dotenv(find_dotenv()) # read local .env file
 
-openai.api_key  = os.environ['OPENAI_API_KEY']
+
+
+
+with open('config.yaml', 'r') as file:
+    config = yaml.safe_load(file)
+
+
+openai.api_key  = config['KEYS']['OPENAI_API_KEY']
+
+
+
 
 from langchain.vectorstores import Chroma
 from langchain.embeddings.openai import OpenAIEmbeddings
@@ -27,7 +37,7 @@ def pretty_print_docs(docs):
 
     
 
-embedding = OpenAIEmbeddings()
+embedding = OpenAIEmbeddings(openai_api_key=openai.api_key)
 vectordb = Chroma(
     persist_directory=persist_directory,
     embedding_function=embedding
@@ -77,7 +87,7 @@ metadata_field_info = [
     ),
 ]
 document_content_description = "Lecture notes"
-llm = OpenAI(temperature=0)
+llm = OpenAI(temperature=0,openai_api_key=openai.api_key)
 retriever = SelfQueryRetriever.from_llm(
     llm,
     vectordb,
@@ -94,7 +104,7 @@ for d in docs:
 
 
 # Wrap our vectorstore
-llm = OpenAI(temperature=0)
+llm = OpenAI(temperature=0,openai_api_key=openai.api_key)
 compressor = LLMChainExtractor.from_llm(llm)
 
 #compression_retriever = ContextualCompressionRetriever(

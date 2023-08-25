@@ -42,6 +42,7 @@ print(len(pages))
 
 '''
 
+import openai
 from langchain.document_loaders import PyPDFLoader
 from langchain.embeddings.openai import OpenAIEmbeddings
 import numpy as np
@@ -49,7 +50,15 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores import Chroma
 
 
+import yaml
 
+
+
+with open('config.yaml', 'r') as file:
+    config = yaml.safe_load(file)
+
+
+openai.api_key  = config['KEYS']['OPENAI_API_KEY']
 
 
 # Load PDF
@@ -80,7 +89,7 @@ print(len(splits))
 
 
 
-embedding = OpenAIEmbeddings()
+embedding = OpenAIEmbeddings(openai_api_key=openai.api_key)
 
 
 sentence1 = "i like dogs"
