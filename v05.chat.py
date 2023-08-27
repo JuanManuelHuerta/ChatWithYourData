@@ -69,6 +69,7 @@ print(result["result"])
 
 
 
+print("IM HERE A")
 
 
 
@@ -101,9 +102,16 @@ print("Q:",question)
 print("A:",result['answer'])
 
 
+###
+
+print("IM HERE B")
 
 
 
+
+
+
+######
 
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.text_splitter import CharacterTextSplitter, RecursiveCharacterTextSplitter
