@@ -28,6 +28,7 @@ print(llm_name)
 
 from langchain.vectorstores import Chroma
 from langchain.embeddings.openai import OpenAIEmbeddings
+
 persist_directory = 'docs/chroma/'
 embedding = OpenAIEmbeddings(openai_api_key=openai.api_key)
 vectordb = Chroma(persist_directory=persist_directory, embedding_function=embedding)
@@ -35,43 +36,47 @@ vectordb = Chroma(persist_directory=persist_directory, embedding_function=embedd
 
 print(vectordb._collection.count())
 
+# Just to check all is well:
+#question = "What are major topics for this class?"
+question = "Is probability a class topicx?"
 
-question = "What are major topics for this class?"
-docs = vectordb.similarity_search(question,k=3)
-len(docs)
+#docs = vectordb.similarity_search(question,k=3)
+#len(docs)
 
 
-### RETREIVAL QA CHAIN
-
+### RETREIVAL QA CHAIN & ALL DOCUMENTS ARE STUFFED INTO THE CONTEXT
 
 
 
 from langchain.chat_models import ChatOpenAI
-llm = ChatOpenAI(model_name=llm_name, temperature=0,openai_api_key=openai.api_key)
-
-
 from langchain.chains import RetrievalQA
+
+llm = ChatOpenAI(model_name=llm_name, temperature=0,openai_api_key=openai.api_key)
 qa_chain = RetrievalQA.from_chain_type(
     llm,
-    retriever=vectordb.as_retriever()
+    retriever=vectordb.as_retriever(),
+    chain_type="refine"
 )
-result = qa_chain({"query": question})
-print(result["result"])
+result = qa_chain({"query":  question})
+print("RERIEVAL QA Query:",question)
+print("RETRIEVAL QA result:", result["result"])
 
 
 
 
 ### PROMPT CHAIN
 
-
+print("_______________________________________________________")
 
 from langchain.prompts import PromptTemplate
 
 # Build prompt
+
 template = """Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer. Use three sentences maximum. Keep the answer as concise as possible. Always say "thanks for asking!" at the end of the answer. 
 {context}
 Question: {question}
 Helpful Answer:"""
+
 QA_CHAIN_PROMPT = PromptTemplate.from_template(template)
 # Run chain
 qa_chain = RetrievalQA.from_chain_type(
@@ -97,7 +102,7 @@ print(result["source_documents"][0])
 
 ## REtrieval QA chain types
 
-print("Retrieval QA from chain_type")
+print("Retrieval QA from chain_type  & MAP REDUCE")
 
 qa_chain_mr = RetrievalQA.from_chain_type(
     llm,

@@ -1,46 +1,3 @@
-'''
-from langchain.document_loaders import PyPDFLoader
-from langchain.text_splitter import TokenTextSplitter
-from langchain.document_loaders import NotionDirectoryLoader
-from langchain.text_splitter import MarkdownHeaderTextSplitter
-
-
-markdown_document = """# Title\n\n \
-## Chapter 1\n\n \
-Hi this is Jim\n\n Hi this is Joe\n\n \
-### Section \n\n \
-Hi this is Lance \n\n 
-## Chapter 2\n\n \
-Hi this is Molly"""
-
-
-headers_to_split_on = [
-    ("#", "Header 1"),
-    ("##", "Header 2"),
-    ("###", "Header 3"),
-]
-
-
-
-
-loader = PyPDFLoader("docs/cs229_lectures/MachineLearning-Lecture01.pdf")
-pages = loader.load()
-
-from langchain.text_splitter import CharacterTextSplitter
-text_splitter = CharacterTextSplitter(
-    separator="\n",
-    chunk_size=1000,
-    chunk_overlap=150,
-    length_function=len
-)
-
-docs = text_splitter.split_documents(pages)
-
-print(len(docs))
-print(len(pages))
-
-
-'''
 
 import openai
 from langchain.document_loaders import PyPDFLoader
@@ -79,7 +36,8 @@ for loader in loaders:
     # Define the Text Splitter 
 text_splitter = RecursiveCharacterTextSplitter(
     chunk_size = 1500,
-    chunk_overlap = 150
+    chunk_overlap = 0,
+    separators=["\n\n","\n","(?<=\. )"," ",""]
 )
 
 #Create a split of the document using the text splitter
@@ -135,6 +93,19 @@ len(docs)
 
 
 print(docs[0].page_content)
+
+##
+
+question = "what did they say about regression in the third lecture?"
+
+docs =vectordb.similarity_search(question,k=5)
+
+
+print(docs)
+
+
+
+
 
 
 vectordb.persist()

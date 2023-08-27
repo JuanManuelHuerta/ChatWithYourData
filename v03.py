@@ -56,22 +56,33 @@ texts = [
 
 smalldb = Chroma.from_texts(texts, embedding=embedding)
 
-
+print ("SIMILARITY SEARCH ================================================")
 question = "Tell me about all-white mushrooms with large fruiting bodies"
-
+print("QUERY:",question)
 print(smalldb.similarity_search(question, k=2))
 
+#
+#  MAXIMUM MARGINAL RELEVANCE (MMR): Increases diversity in responses
+#
 
 
-
+print ("MAXIMUM MARGIN RELEVANCE ================================================")
 question = "what did they say about matlab?"
+print("QUERY:",question)
 
 #docs_ss = vectordb.similarity_search(question,k=3)
 docs_mmr = vectordb.max_marginal_relevance_search(question,k=3)
 
-print(docs_mmr[0].page_content[:100])
-print(docs_mmr[1].page_content[:100])
+print("MMR A1:",docs_mmr[0].page_content[:100])
+print("MMR A2",docs_mmr[1].page_content[:100])
 
+##
+##  SELF QUERY: Uses and LLM (OpenAI) to set up description of the filters that the query provides
+##
+
+
+print ("SELF QUERY ================================================")
+print("QUERY:",question)
 
 
 metadata_field_info = [
@@ -96,13 +107,23 @@ retriever = SelfQueryRetriever.from_llm(
     verbose=True
 )
 question = "what did they say about regression in the third lecture?"
-
 docs = retriever.get_relevant_documents(question)
 
+
 for d in docs:
-    print(d.metadata)
+    print("SelfQueryRetriever: ",d.metadata)
 
 
+
+##
+## CONTEXTUAL COMPRESSION: EXTRACTS ONLY THE RELEVANT BITS
+##
+
+
+print ("COMPRESSED RETRIEVER ================================================")
+question = "what did they say about matlab?"
+print("QUERY:",question)
+    
 # Wrap our vectorstore
 llm = OpenAI(temperature=0,openai_api_key=openai.api_key)
 compressor = LLMChainExtractor.from_llm(llm)
@@ -117,6 +138,5 @@ compression_retriever = ContextualCompressionRetriever(
     base_retriever=vectordb.as_retriever(search_type = "mmr")
 )
 
-question = "what did they say about matlab?"
 compressed_docs = compression_retriever.get_relevant_documents(question)
 pretty_print_docs(compressed_docs)
