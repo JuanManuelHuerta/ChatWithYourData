@@ -18,7 +18,8 @@ with open('config.yaml', 'r') as file:
 openai.api_key  = config['KEYS']['OPENAI_API_KEY']
 
 
-# Load PDF
+# Load Macro PDF files
+
 loaders = [
     # Duplicate documents on purpose - messy data
     PyPDFLoader("docs/macro/Livro Macro.pdf"),
@@ -32,11 +33,11 @@ for loader in loaders:
 
 
 
-
-    # Define the Text Splitter 
+# Define the Text Splitter 
 text_splitter = RecursiveCharacterTextSplitter(
+    #chunk_size = 1500,
     chunk_size = 1500,
-    chunk_overlap = 0,
+    chunk_overlap = 500,
     separators=["\n\n","\n","(?<=\. )"," ",""]
 )
 
