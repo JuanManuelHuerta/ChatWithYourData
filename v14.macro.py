@@ -3,6 +3,11 @@ import openai
 import sys
 import yaml
 
+from langchain.vectorstores import Chroma
+from langchain.embeddings.openai import OpenAIEmbeddings
+
+
+
 ## This should run after v12
 
 with open('config.yaml', 'r') as file:
@@ -26,8 +31,6 @@ print(llm_name)
 
 
 
-from langchain.vectorstores import Chroma
-from langchain.embeddings.openai import OpenAIEmbeddings
 
 persist_directory = 'docs/chroma/'
 embedding = OpenAIEmbeddings(openai_api_key=openai.api_key)
