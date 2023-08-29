@@ -2,13 +2,17 @@ import os
 import openai
 import sys
 import yaml
-
 from langchain.vectorstores import Chroma
 from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain.chat_models import ChatOpenAI
+from langchain.chains import RetrievalQA
+
 
 
 
 ## This should run after v12
+#  To do look at v03.py
+
 
 with open('config.yaml', 'r') as file:
     config = yaml.safe_load(file)
@@ -30,17 +34,15 @@ else:
 print(llm_name)
 
 
-
-
 persist_directory = 'docs/chroma/'
 embedding = OpenAIEmbeddings(openai_api_key=openai.api_key)
 vectordb = Chroma(persist_directory=persist_directory, embedding_function=embedding)
-
-
 print(vectordb._collection.count())
 
 # Just to check all is well:
 #question = "What are major topics for this class?"
+
+
 question = "Who sets the interest rates? and What happens when interest rates rise?"
 
 #docs = vectordb.similarity_search(question,k=3)
@@ -51,9 +53,6 @@ question = "Who sets the interest rates? and What happens when interest rates ri
 
 
 
-from langchain.chat_models import ChatOpenAI
-from langchain.chains import RetrievalQA
-
 llm = ChatOpenAI(model_name=llm_name, temperature=0,openai_api_key=openai.api_key)
 qa_chain = RetrievalQA.from_chain_type(
     llm,
@@ -63,7 +62,6 @@ qa_chain = RetrievalQA.from_chain_type(
 result = qa_chain({"query":  question})
 print("RERIEVAL QA Query:",question)
 print("RETRIEVAL QA result:", result["result"])
-
 
 
 
