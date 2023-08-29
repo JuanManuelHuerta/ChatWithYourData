@@ -26,7 +26,7 @@ https://www.trychroma.com/
 
 
 
-# environmetn
+# environments
 
 
 (env2) jmhuerta@b0be8379a8b7 ChatWithYourData % pip3  list
