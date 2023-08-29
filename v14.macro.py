@@ -114,14 +114,12 @@ vectordb = Chroma(persist_directory=persist_directory, embedding_function=embedd
 print("Accessed Chroma database with ",vectordb._collection.count()," documents")
 
 
-
 while True:
     question=input("Enter Question")
     all_chains(question,llm,vectordb)
 
 
     
-
 
 '''
 #If you wish to experiment on the LangChain plus platform:
