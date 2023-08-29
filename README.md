@@ -1,6 +1,10 @@
 # ChatWithYourData
 
 
+* Dont forget to run
+
+git config --local user.email steampunkkraken@cephalopod.com
+
 * Resources:
 
 
