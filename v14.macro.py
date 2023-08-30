@@ -15,6 +15,81 @@ from langchain.prompts import PromptTemplate
 #  To do look at v03.py
 
 
+
+
+### RETREIVAL QA CHAIN & ALL DOCUMENTS ARE STUFFED INTO THE CONTEXT
+
+
+def all_chains(question,llm,vectordb):
+
+    print(f"Q: {question}\n\n")
+    
+    qa_chain = RetrievalQA.from_chain_type(
+        llm,
+        retriever=vectordb.as_retriever(),
+        chain_type="refine"
+    )
+
+    ##  SET THE PROMPT:
+    #question = "What is money and who invented it?"
+    #question = "Who sets the interest rates? and What happens when interest rates rise?"
+
+
+    print("\n\n_________________QA CHAIN with REFINE_________________________")
+
+    result = qa_chain({"query":  question})
+    print("RERIEVAL QA Query:",question)
+    print("RETRIEVAL QA result:", result["result"])
+
+
+
+    ### PROMPT CHAIN
+
+    print("\n\n_______________ QA CHAIN with WITH PROMPT TEMPLATE____________________")
+
+    # Build prompt
+
+    template = """Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer. Use three sentences maximum. Keep the answer as concise as possible. Always say "thanks for asking!" at the end of the answer. 
+    {context}
+    Question: {question}
+    Helpful Answer:"""
+
+    QA_CHAIN_PROMPT = PromptTemplate.from_template(template)
+    # Run chain
+    qa_chain = RetrievalQA.from_chain_type(
+        llm,
+        retriever=vectordb.as_retriever(),
+        return_source_documents=True,
+        chain_type_kwargs={"prompt": QA_CHAIN_PROMPT}
+    )
+
+
+    result = qa_chain({"query": question})
+    print(result["result"])
+
+    print("\n REFERENCES:")
+    print("result documents")
+    print(result["source_documents"][0])
+
+    print("\n\n_________________QA CHAIN with MAP REDUCEE_________________________")
+
+
+    ## REtrieval QA chain types
+
+
+    qa_chain_mr = RetrievalQA.from_chain_type(
+        llm,
+        retriever=vectordb.as_retriever(),
+        chain_type="map_reduce"
+    )
+    result = qa_chain_mr({"query": question})
+    print(result["result"])
+
+
+
+
+
+
 with open('config.yaml', 'r') as file:
     config = yaml.safe_load(file)
 
@@ -32,85 +107,20 @@ else:
     llm_name = "gpt-3.5-turbo"
 print(llm_name)
 
+llm = ChatOpenAI(model_name=llm_name, temperature=0,openai_api_key=openai.api_key)
 persist_directory = 'docs/chroma/'
 embedding = OpenAIEmbeddings(openai_api_key=openai.api_key)
 vectordb = Chroma(persist_directory=persist_directory, embedding_function=embedding)
 print("Accessed Chroma database with ",vectordb._collection.count()," documents")
 
-# Just to check all is well:
-#question = "What are major topics for this class?"
 
 
-#docs = vectordb.similarity_search(question,k=3)
-#len(docs)
+while True:
+    question=input("Enter Question")
+    all_chains(question,llm,vectordb)
 
 
-### RETREIVAL QA CHAIN & ALL DOCUMENTS ARE STUFFED INTO THE CONTEXT
-
-
-llm = ChatOpenAI(model_name=llm_name, temperature=0,openai_api_key=openai.api_key)
-qa_chain = RetrievalQA.from_chain_type(
-    llm,
-    retriever=vectordb.as_retriever(),
-    chain_type="refine"
-)
-
-##  SET THE PROMPT:
-question = "What is money and who invented it?"
-question = "Who sets the interest rates? and What happens when interest rates rise?"
-
-
-print("\n\n_________________QA CHAIN with REFINE_________________________")
-
-result = qa_chain({"query":  question})
-print("RERIEVAL QA Query:",question)
-print("RETRIEVAL QA result:", result["result"])
-
-
-
-### PROMPT CHAIN
-
-print("\n\n_______________ QA CHAIN with WITH PROMPT TEMPLATE____________________")
-
-# Build prompt
-
-template = """Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer. Use three sentences maximum. Keep the answer as concise as possible. Always say "thanks for asking!" at the end of the answer. 
-{context}
-Question: {question}
-Helpful Answer:"""
-
-QA_CHAIN_PROMPT = PromptTemplate.from_template(template)
-# Run chain
-qa_chain = RetrievalQA.from_chain_type(
-    llm,
-    retriever=vectordb.as_retriever(),
-    return_source_documents=True,
-    chain_type_kwargs={"prompt": QA_CHAIN_PROMPT}
-)
-
-
-result = qa_chain({"query": question})
-print(result["result"])
-
-print("\n REFERENCES:")
-print("result documents")
-print(result["source_documents"][0])
-
-print("\n\n_________________QA CHAIN with MAP REDUCEE_________________________")
-
-
-## REtrieval QA chain types
-
-
-qa_chain_mr = RetrievalQA.from_chain_type(
-    llm,
-    retriever=vectordb.as_retriever(),
-    chain_type="map_reduce"
-)
-result = qa_chain_mr({"query": question})
-print(result["result"])
-
-
+    
 
 
 '''
