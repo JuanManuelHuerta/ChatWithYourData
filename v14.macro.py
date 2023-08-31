@@ -115,7 +115,7 @@ print("Accessed Chroma database with ",vectordb._collection.count()," documents"
 
 
 while True:
-    question=input("Enter Question")
+    question=input("Enter Question:")
     all_chains(question,llm,vectordb)
 
 
