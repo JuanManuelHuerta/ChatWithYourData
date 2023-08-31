@@ -3,8 +3,12 @@ import openai
 import sys
 import yaml
 import datetime
-sys.path.append('../..')
+
+
 from langchain.vectorstores import Chroma
+from langchain.document_loaders import PyPDFLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain import FAISS
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import PromptTemplate
@@ -16,7 +20,40 @@ with open('config.yaml', 'r') as file:
     config = yaml.safe_load(file)
 openai.api_key  = config['KEYS']['OPENAI_API_KEY']
 
-# Load the LLM
+
+
+def create_on_the_fly_KB():
+    loaders = [
+        # Duplicate documents on purpose - messy data                                                                                                                                                                                    
+        PyPDFLoader("docs/macro/Livro Macro.pdf"),
+        PyPDFLoader("docs/macro/Macroeconomics_IntroReview.pdf"),
+        PyPDFLoader("docs/macro/n.-gregory-mankiw-macroeconomics-7th-edition-2009.pdf")
+    ]
+    docs = []
+    for loader in loaders:
+        docs.extend(loader.load())
+            
+    # Define the Text Splitter                                                                                                                                                                                                                   
+    text_splitter = RecursiveCharacterTextSplitter(
+        #chunk_size = 1500,                                                                                                                                                                                                                  
+        chunk_size = 1500,
+        chunk_overlap = 500,
+        separators=["\n\n","\n","(?<=\. )"," ",""]
+    )
+
+
+    chunks = text_splitter.split_documents(docs)
+    #chunks = text_splitter.split_text(docs)
+    # Convert the chunks of text into embeddings to form a knowledge base
+    embeddings = OpenAIEmbeddings(openai_api_key=openai.api_key)
+
+    knowledgeBase = FAISS.from_documents(chunks, embeddings)    
+    return knowledgeBase
+
+
+faiss_kb = create_on_the_fly_KB()
+
+
 current_date = datetime.datetime.now().date()
 if current_date < datetime.date(2023, 9, 2):
     llm_name = "gpt-3.5-turbo-0301"
@@ -28,7 +65,7 @@ print(llm_name)
 persist_directory = 'docs/chroma/'
 
 embedding = OpenAIEmbeddings(openai_api_key=openai.api_key)
-vectordb = Chroma(persist_directory=persist_directory, embedding_function=embedding)
+#vectordb = Chroma(persist_directory=persist_directory, embedding_function=embedding)
 llm = ChatOpenAI(model_name=llm_name,openai_api_key=openai.api_key,  temperature=0)
 
 '''
@@ -89,7 +126,8 @@ def load_db(chain_type, k):
     # create vector database from data
     #db = DocArrayInMemorySearch.from_documents(docs, embeddings)
     # define retriever
-    db = Chroma(persist_directory=persist_directory, embedding_function=embedding)
+    #db = Chroma(persist_directory=persist_directory, embedding_function=embedding)
+    db=faiss_kb
     retriever = db.as_retriever(search_type="similarity", search_kwargs={"k": k})
     # create a chatbot chain. Memory is managed externally.
     qa = ConversationalRetrievalChain.from_llm(
@@ -114,7 +152,7 @@ class cbfs(param.Parameterized):
     def __init__(self,  **params):
         super(cbfs, self).__init__( **params)
         self.panels = []
-        vectordb = Chroma(persist_directory=persist_directory, embedding_function=embedding)
+        #vectordb = Chroma(persist_directory=persist_directory, embedding_function=embedding)
         self.qa = load_db("stuff", 4)
 
     
