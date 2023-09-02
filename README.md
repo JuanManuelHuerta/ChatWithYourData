@@ -28,6 +28,16 @@ and chroma:
 
 https://www.trychroma.com/
 
+#  PDF on MacroEconomics
+
+https://jollygreengeneral.typepad.com/files/n.-gregory-mankiw-macroeconomics-7th-edition-2009.pdf
+
+http://www.skchugh.com/images/IntroReview.pdf
+
+https://home.ufam.edu.br/andersonlfc/MacroI/Livro%20Macro.pdf
+
+
+https://d3bxy9euw4e147.cloudfront.net/oscms-qa/media/documents/Macroeconomics2e-OP_08uAIKN.pdf
 
 
 # environments
