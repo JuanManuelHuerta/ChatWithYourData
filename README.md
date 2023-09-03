@@ -28,6 +28,22 @@ and chroma:
 
 https://www.trychroma.com/
 
+
+# Location of models
+
+
+
+
+
+https://raw.githubusercontent.com/nomic-ai/gpt4all/main/gpt4all-chat/metadata/models.json
+
+
+Model is
+
+orca-mini-3b.ggmlv3.q4_0.bin
+
+ wget https://huggingface.co/TheBloke/orca_mini_3B-GGML/resolve/main/orca-mini-3b.ggmlv3.q4_0.bin
+
 #  PDF on MacroEconomics
 
 https://jollygreengeneral.typepad.com/files/n.-gregory-mankiw-macroeconomics-7th-edition-2009.pdf
@@ -137,3 +153,21 @@ webencodings        0.5.1
 websockets          11.0.3
 xyzservices         2023.7.0
 yarl                1.9.2
+
+
+
+# Steps
+
+
+Non Local with ChromaDB
+
+v12.macropy
+
+
+v05.chat.y
+
+
+
+To move to a FAISS store with a local model
+
+

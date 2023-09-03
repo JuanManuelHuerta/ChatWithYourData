@@ -4,3 +4,4 @@ openai
 tiktoken
 chromadb
 lark
+gpt4all

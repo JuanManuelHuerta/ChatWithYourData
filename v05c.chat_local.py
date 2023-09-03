@@ -23,8 +23,8 @@ from langchain.memory import ConversationBufferMemory
 from langchain.chat_models import ChatOpenAI
 from langchain.document_loaders import TextLoader
 from langchain.embeddings import GPT4AllEmbeddings
-from langchain.llms import GPT4All
-#from gpt4all import GPT4All
+#from langchain.llms import GPT4All
+from gpt4all import GPT4All
 
 
 ## ToDo:
@@ -35,13 +35,15 @@ from langchain.llms import GPT4All
 ##   https://python.langchain.com/docs/use_cases/question_answering/how_to/local_retrieval_qa
 #    https://huggingface.co/TheBloke/Llama-2-7B-Chat-GGML/tree/main
 
-local = True
+local = False
 
 if local is True:
-    model = GPT4All(model="orca-mini-3b.ggmlv3.q4_0.bin",max_tokens=2048)
+    model = GPT4All("orca-mini-3b.ggmlv3.q4_0.bin",model_path="./models/")
+    
 else:
     with open('config.yaml', 'r') as file:
         config = yaml.safe_load(file)
+    print(config)
     openai.api_key  = config['KEYS']['OPENAI_API_KEY']
     current_date = datetime.datetime.now().date()
     if current_date < datetime.date(2023, 9, 2):
