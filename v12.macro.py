@@ -24,8 +24,10 @@ loaders = [
     # Duplicate documents on purpose - messy data
     PyPDFLoader("docs/macro/Livro Macro.pdf"),
     PyPDFLoader("docs/macro/Macroeconomics_IntroReview.pdf"),
-    PyPDFLoader("docs/macro/n.-gregory-mankiw-macroeconomics-7th-edition-2009.pdf")
+    PyPDFLoader("docs/macro/n.-gregory-mankiw-macroeconomics-7th-edition-2009.pdf"),
+    PyPDFLoader("docs/macro/Macroeconomics2e-OP_08uAIKN.pdf")
 
+    
 ]
 docs = []
 for loader in loaders:
